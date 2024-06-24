@@ -1,7 +1,6 @@
 import 'package:assignment/SharedPerfrenceService.dart';
 import 'package:assignment/chatScreen.dart';
 import 'package:assignment/emoji.dart';
-import 'package:assignment/signUp.dart';
 import 'package:assignment/signup_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       // home: ChatScreen(),
-      home: ChatScreen(),
+      home: SignUpScreen(),
     );
   }
 }
