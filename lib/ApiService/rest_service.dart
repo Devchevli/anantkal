@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:assignment/model/CreateModel.dart';
+import 'package:assignment/model/chat_model.dart';
 import 'package:assignment/model/user_detail.dart';
 import 'package:dio/dio.dart';
 
@@ -11,7 +14,6 @@ class RestService {
             baseUrl: 'https://api.baii.me/api/',
             connectTimeout: const Duration(seconds: 30),
             receiveTimeout: const Duration(seconds: 30),
-
           ),
         )..options.headers['AuthToken'] = '2ec26ad9-e039-445e-915e-zACl56sr2q';
 
@@ -45,7 +47,6 @@ class RestService {
     return createUser;
   }
 
-
   Future<UserDetail> getUserDetail({
     required String email,
   }) async {
@@ -61,92 +62,62 @@ class RestService {
     UserDetail userDetail = UserDetail.fromJson(res.data);
     return userDetail;
   }
-}
 
+  Future<ChatModel> getAllChat() async {
+    Response res = await _dio.get(
+      "showglobalchat",
+    );
 
-
-class UserDetail {
-  String? status;
-  String? message;
-  List<Data>? data;
-
-  UserDetail({this.status, this.message, this.data});
-
-  UserDetail.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    message = json['message'];
-    if (json['data'] != null) {
-      data = <Data>[];
-      json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
-      });
-    }
+    ChatModel chatModel = ChatModel.fromJson(res.data);
+    return chatModel;
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['status'] = status;
-    data['message'] = message;
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
+  Future<CreateUser> sendChat({
+    required String userId,
+    String message = "",
+    // String image = "",
+    File? file,
+  }) async {
+    // FormData formData;
+    // if (file != null) {
+    //   String fileName = file.path.split('/').last;
+    //   formData = FormData.fromMap({
+    //     "user_id": userId,
+    //     "message": message,
+    //     "image": await MultipartFile.fromFile(file.path, filename: fileName),
+    //   });
+    // } else {
+    //   formData = FormData.fromMap({
+    //     "user_id": userId,
+    //     "message": message,
+    //   });
+    // }
 
-class Data {
-  int? id;
-  String? name;
-  String? email;
-  String? phoneNumber;
-  String? gender;
-  String? address;
-  String? city;
-  String? state;
-  String? dateOfBirth;
-  String? createdAt;
-  String? updatedAt;
+    FormData formData = FormData.fromMap({
+      "user_id": userId,
+      "message": message,
+      if (file != null)
+        "image": await MultipartFile.fromFile(file.path, filename: file.path.split('/').last),
+    });
 
-  Data(
-      {this.id,
-        this.name,
-        this.email,
-        this.phoneNumber,
-        this.gender,
-        this.address,
-        this.city,
-        this.state,
-        this.dateOfBirth,
-        this.createdAt,
-        this.updatedAt});
+    Response res = await _dio.post(
+      "createglobalchat",
+      data: formData,
+    );
 
-  Data.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    email = json['email'];
-    phoneNumber = json['phone_number'];
-    gender = json['gender'];
-    address = json['address'];
-    city = json['city'];
-    state = json['state'];
-    dateOfBirth = json['date_of_birth'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-  }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['name'] = name;
-    data['email'] = email;
-    data['phone_number'] = phoneNumber;
-    data['gender'] = gender;
-    data['address'] = address;
-    data['city'] = city;
-    data['state'] = state;
-    data['date_of_birth'] = dateOfBirth;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
-    return data;
+    // var formData = {
+    //   "user_id": userId,
+    //   "message": message,
+    //   "image": image,
+    // };
+    //
+    // Response res = await _dio.post(
+    //   "createglobalchat",
+    //   data: formData,
+    // );
+
+    CreateUser createUser = CreateUser.fromJson(res.data);
+    return createUser;
   }
 }

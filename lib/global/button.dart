@@ -8,6 +8,7 @@ final Color kPrimaryColor = Color(0xFF438E96);
 final Color kTextColor = Color(0xFF606060);
 const kBackgroundColor = Color(0xFFFCFCFC);
 const Color kFocusedBorderColor = Color(0xFF438E96);
+const Color kChat = Color(0xffDDEFF0);
 const Color kUnfocusedBorderColor = Colors.grey;
 const Color kFocusedBackgroundColor = Color(0xFFBFE0E2);
 const Color kUnfocusedBackgroundColor = Colors.white;

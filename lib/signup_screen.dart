@@ -1,16 +1,15 @@
 import 'package:assignment/ApiService/rest_service.dart';
+import 'package:assignment/chatScreen.dart';
 import 'package:assignment/global/button.dart';
-import 'package:assignment/global/color.dart';
 import 'package:assignment/main.dart';
 import 'package:date_utility/date_utility.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-
 import 'package:intl_phone_field/intl_phone_field.dart';
-
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -122,6 +121,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             'controller.selectedDate.toString() ${dateFormat}');
                         if (controller.formKey.currentState!.validate()) {
                           controller.signUp(
+                            context,
                             controller.fullName,
                             controller.phone,
                             controller.email,
@@ -611,6 +611,9 @@ class SignUpController extends GetxController {
 
   void setGender(String? value) {
     selectedGender = value;
+    if(value != null){
+      update();
+    }
   }
 
   void setPostalCode(String value) {
@@ -624,6 +627,7 @@ class SignUpController extends GetxController {
   }
 
   Future<void> signUp(
+    BuildContext context,
     String fullName,
     String phone,
     String email,
@@ -652,40 +656,54 @@ class SignUpController extends GetxController {
     print('RES... ${res.status}');
 
     if (res.status == "true") {
-      getUserDetail(email);
+      getUserDetail(
+        context,
+        email,
+      );
     } else {
-      if (res.message == "mail is already registered. Try another email" ||
-          res.message ==
-              "Phone Number is already registered. Try another Phone Number") {
-        SnackBar(
-          content: Text("${res.message}", style: TextStyle(color: AppColors.textColor),),
-          backgroundColor: AppColors.mainColor,
+      if (res.message == "Email is already registered. Try another email") {
+        //   SnackBar(
+        //     content: Text("${res.message}", style: TextStyle(color: AppColors.textColor),),
+        //     backgroundColor: AppColors.mainColor,
+        //   );
+        getUserDetail(
+          context,
+          email,
         );
         // Fluttertoast.showToast(
         //   msg: "${res.message}",
         // );
-      } else {
-
-      }
+      } else if (res.message ==
+          "Phone Number is already registered. Try another Phone Number") {
+        Fluttertoast.showToast(
+          msg: "${res.message}",
+        );
+      } else {}
     }
-
   }
 
   Future<void> getUserDetail(
+    BuildContext context,
     String email,
     // String pincode,
   ) async {
-    print('Signing up...');
+    print('getUserDetail...');
 
     var res = await restService.getUserDetail(
       email: email,
     );
-    print('RES... ${res.message}');
-    print('RES... ${res.status}');
+    print('getUserDetail... ${res.message}');
+    print('getUserDetail... ${res.status}');
 
     if (res.status == "true") {
       userId = res.data![0].id!;
+      name = res.data![0].name!;
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => ChatScreen()),
+          (Route<dynamic> route) => false);
+      // Navigator.of(context).pushNamedAndRemoveUntil(MaterialPageRoute(builder: (context) => chatScreen(),), (route) => false,);
     }
-    // Implement your signup logic here
+
+
   }
 }

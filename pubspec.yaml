@@ -43,6 +43,8 @@ dependencies:
   date_utility: ^0.1.1
   fluttertoast: ^8.2.6
   shared_preferences: ^2.2.3
+  emoji_picker_flutter: ^2.2.0
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
